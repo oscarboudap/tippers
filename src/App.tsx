@@ -13,6 +13,7 @@ import RecentPlays from './sections/RecentPlays/RecentPlays'
 import Toasts from './sections/Toasts'
 import { MainWrapper, TosInner, TosWrapper } from './styles'
 import { TOS_HTML } from './constants'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -25,21 +26,19 @@ function ErrorHandler() {
   const toast = useToast()
   const [error, setError] = React.useState<Error>()
 
-  useTransactionError(
-    (error) => {
-      if (error.message === 'NOT_CONNECTED') {
-        walletModal.setVisible(true)
-        return
-      }
-      toast({ title: '❌ Transaction error', description: error.error?.errorMessage ?? error.message })
-    },
-  )
+  useTransactionError((error) => {
+    if (error.message === 'NOT_CONNECTED') {
+      walletModal.setVisible(true)
+      return
+    }
+    toast({ title: '❌ Transaction error', description: error.error?.errorMessage ?? error.message })
+  })
 
   return (
     <>
       {error && (
         <Modal onClose={() => setError(undefined)}>
-          <h1>Error occured</h1>
+          <h1>Error occurred</h1>
           <p>{error.message}</p>
         </Modal>
       )}
@@ -50,25 +49,31 @@ function ErrorHandler() {
 export default function App() {
   const newcomer = useUserStore((state) => state.newcomer)
   const set = useUserStore((state) => state.set)
+
   return (
     <>
+
       {newcomer && (
         <Modal>
           <h1>Welcome</h1>
           <TosWrapper>
             <TosInner dangerouslySetInnerHTML={{ __html: TOS_HTML }} />
           </TosWrapper>
-          <p>
-            By playing on our platform, you confirm your compliance.
-          </p>
+          <p>By playing on our platform, you confirm your compliance.</p>
           <GambaUi.Button main onClick={() => set({ newcomer: false })}>
             Acknowledge
           </GambaUi.Button>
         </Modal>
       )}
+
       <ScrollToTop />
       <ErrorHandler />
       <Header />
+      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+        <h2>Connect Wallet</h2>
+        <ConnectButton />
+      </div>
+
       <Toasts />
       <MainWrapper>
         <Routes>
